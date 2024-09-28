@@ -41,6 +41,52 @@
             </mat-select>
         </mat-form-field>
     </div>
+
+
+    <div class="row">
+        <div class="col-md-12">
+
+            <mat-table [dataSource]="dataSource">
+
+                <ng-container matColumnDef="_id">
+                    <mat-header-cell [hidden]="true" *matHeaderCellDef>
+                        id
+                    </mat-header-cell>
+                    <mat-cell [hidden]="true" *matCellDef="let element">
+                        {{element._id}}
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="mispar_mosah">
+                    <mat-header-cell class="headerTableItemPadding0" [ngClass]="'w-200 wordWrap'" *matHeaderCellDef>
+                        מספר מוסך
+                    </mat-header-cell>
+
+                    <mat-cell class="tableItemBold" *matCellDef="let element">
+                        {{element.mispar_mosah}}
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="shem_mosah">
+                    <mat-header-cell class="headerTableItemPadding0" [ngClass]="'w-200 wordWrap'" *matHeaderCellDef>
+                        שם מוסך
+                    </mat-header-cell>
+
+                    <mat-cell class="tableItemBold" *matCellDef="let element">
+                        {{element.shem_mosah}}
+                    </mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumns;sticky: true"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns">
+                </mat-row>
+
+            </mat-table>
+
+
+        </div>
+    </div>
+
 </form>
 
 Form Data : {{ foodForm.value | json }}<br />
