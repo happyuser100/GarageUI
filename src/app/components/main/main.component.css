@@ -1,0 +1,19 @@
+.mainFrom {
+    padding: 20px;
+}
+
+p {
+    font-family: Lato;
+}
+
+:host ::ng-deep select-all {
+    margin: 15px 10px;
+}
+
+::ng-deep .parent-class .mat-form-field-underline {
+    display: none;
+}
+
+::ng-deep .parent-class .custom-component .mat-form-field-underline {
+    display: block;
+}
