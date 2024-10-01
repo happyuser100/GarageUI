@@ -12,9 +12,16 @@ export class GarageService {
 
   baseURL: string = environment.baseURL;
   constructor(private httpClient: HttpClient, private commonService: CommonService) { }
+  
+  getAllAPIGarages() {
+    return this.httpClient.get<GarageResult>(`${this.baseURL}`)
+      .pipe(
+        catchError(this.commonService.handleError)
+      );
+  }
 
   getAllGarages() {
-    return this.httpClient.get<GarageResult>(`${this.baseURL}/getAllGarages`)
+    return this.httpClient.get<GarageItem[]>(`${this.baseURL}/getAllGarages`)
       .pipe(
         catchError(this.commonService.handleError)
       );

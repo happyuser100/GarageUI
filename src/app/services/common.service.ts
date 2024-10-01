@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { throwError } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { GarageItem } from '../models/garage-item';
+import { NameValuePair } from '../models/name-value-pair';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +17,20 @@ export class CommonService {
     this.snackBar.open(message, "", {
       duration: 5000,
     });
+  }
+
+  getComboValues(table: GarageItem[]) {
+    let comboValues: NameValuePair[] = [];
+
+    table.forEach(item => {
+      const val: NameValuePair = {
+        value: item._id.toString(),
+        viewValue: item.shem_mosah ?? "",
+      };
+      comboValues.push(val);
+    })
+
+    return comboValues;
   }
 
   handleError = (error: any) => {

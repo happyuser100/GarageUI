@@ -1,4 +1,4 @@
 export const environment = {
     production: true,
-    baseURL: 'http://localhost:3002/api/garages'
+    baseURL: 'http://localhost:3003/api/garage'
   };

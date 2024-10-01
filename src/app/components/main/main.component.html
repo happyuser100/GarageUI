@@ -2,7 +2,7 @@
     <div class="row">
         <!-- <mat-form-field class="col-md-6"> -->
 
-             <!-- <div class="select-all">
+        <!-- <div class="select-all">
                         <mat-checkbox
                           [indeterminate]="isIndeterminate()"
                           [checked]="isChecked()"
@@ -12,14 +12,14 @@
                         >
                       </div> -->
 
-                <!-- <mat-label>Test</mat-label> -->
-                <!-- <mat-select #select [multiple]="true" [formControl]="selectField">                  
+        <!-- <mat-label>Test</mat-label> -->
+        <!-- <mat-select #select [multiple]="true" [formControl]="selectField">                  
                   <mat-option *ngFor="let item of data" [value]="item['guid']">
                     {{ item["name"] }}
                   </mat-option>
                 </mat-select> -->
 
-            <!-- <mat-select placeholder="Mailing Sender" formControlName="massEmailSender">
+        <!-- <mat-select placeholder="Mailing Sender" formControlName="massEmailSender">
                 <mat-option value="List">Test</mat-option>
             </mat-select>
         </mat-form-field>
@@ -27,7 +27,7 @@
 
 
 
-            <!-- <app-mat-select class="custom-component" [data]="data" formControlName="tractList" fieldName="name"
+        <!-- <app-mat-select class="custom-component" [data]="data" formControlName="tractList" fieldName="name"
                 [multiselect]="true" labelText="Test label" idField="guid"></app-mat-select>  -->
         <!-- </mat-form-field> -->
 
@@ -40,6 +40,15 @@
                 </mat-option>
             </mat-select>
         </mat-form-field>
+
+        <mat-form-field class="col-md-6">
+            <mat-select [formControl]="garagesForm" placeholder="Garages" multiple>
+                <mat-option *ngFor="let garage of allGarages" [value]="garage.value">
+                    {{garage.viewValue}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
     </div>
 
 
@@ -90,3 +99,5 @@
 </form>
 
 Form Data : {{ foodForm.value | json }}<br />
+
+Garage Form Data : {{ garagesForm.value | json }}<br />

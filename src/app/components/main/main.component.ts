@@ -5,6 +5,7 @@ import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
 import { MatTableDataSource } from '@angular/material/table';
 import { GarageItem } from 'src/app/models/garage-item';
+import { NameValuePair } from 'src/app/models/name-value-pair';
 import { Sample } from 'src/app/models/sample';
 import { CommonService } from 'src/app/services/common.service';
 import { GarageService } from 'src/app/services/garage.service';
@@ -22,33 +23,47 @@ export class MainComponent implements OnInit {
   //@ViewChild('select') selectField: any;
 
   allfoods: Food[] = [
-    {value: 'steak-0', viewValue: 'Steak'},
-    {value: 'pizza-1', viewValue: 'Pizza'},
-    {value: 'tacos-2', viewValue: 'Tacos'},
-    {value: 'pasta-3', viewValue: 'Pasta'}
+    { value: 'steak-0', viewValue: 'Steak' },
+    { value: 'pizza-1', viewValue: 'Pizza' },
+    { value: 'tacos-2', viewValue: 'Tacos' },
+    { value: 'pasta-3', viewValue: 'Pasta' }
   ];
   myselectedFoods = ['pasta-3', 'steak-0'];
   foodForm: FormControl = new FormControl(this.myselectedFoods);
 
-  displayedColumns: string[] = ['_id','mispar_mosah', 'shem_mosah'];
+  displayedColumns: string[] = ['_id', 'mispar_mosah', 'shem_mosah'];
 
   dataSource = new MatTableDataSource<GarageItem>();
 
   data: GarageItem[] = [];
 
+  allGarages: NameValuePair[] = [];
+
+  garagesForm: FormControl = new FormControl();
+
   constructor(private fb: FormBuilder, private garageService: GarageService, private commonService: CommonService) {
     this.form = this.createForm();
   }
 
+  createForm(): FormGroup {
+    return this.fb.group(
+      {
+        foodForm: ['', Validators.required],
+        garagesForm: ['', Validators.required],
+        //tractList: ['', Validators.required],
+      })
+  }
+
+
   ngOnInit(): void {
+    this.getAllAPIGarages();
     this.getAllGarages();
   }
 
-  getAllGarages() {
-    this.garageService.getAllGarages().subscribe({
+  getAllAPIGarages() {
+    this.garageService.getAllAPIGarages().subscribe({
       next: (response) => {
-        this.data = response.data;
-        this.dataSource = new MatTableDataSource<GarageItem>(this.data);
+        this.allGarages = this.commonService.getComboValues(response.data);
       },
       error: (error) => {
         this.commonService.displayMessage('There was an error in retrieving data from the server');
@@ -57,12 +72,16 @@ export class MainComponent implements OnInit {
   }
 
 
-  createForm(): FormGroup {
-    return this.fb.group(
-      {
-        foodForm: ['', Validators.required],
-        //tractList: ['', Validators.required],
-      })
+  getAllGarages() {
+    this.garageService.getAllGarages().subscribe({
+      next: (response) => {
+        this.data = response;
+        this.dataSource = new MatTableDataSource<GarageItem>(this.data);
+      },
+      error: (error) => {
+        this.commonService.displayMessage('There was an error in retrieving data from the server');
+      }
+    });
   }
 
   isIndeterminate(): boolean {
