@@ -1,10 +1,8 @@
-import { Component, OnInit, VERSION, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatCheckboxChange } from '@angular/material/checkbox';
-import { MatOption } from '@angular/material/core';
-import { MatSelect } from '@angular/material/select';
 import { MatTableDataSource } from '@angular/material/table';
-import { GarageItem } from 'src/app/models/garage-item';
+import { forkJoin } from 'rxjs';
+import { GarageItem, GarageResult } from 'src/app/models/garage-item';
 import { NameValuePair } from 'src/app/models/name-value-pair';
 import { Sample } from 'src/app/models/sample';
 import { CommonService } from 'src/app/services/common.service';
@@ -18,59 +16,59 @@ import { GarageService } from 'src/app/services/garage.service';
 export class MainComponent implements OnInit {
 
   form: FormGroup;
-  dataSample: Sample[] = [{ "absent_occupied": 15, "guid": "tract_info::35807DA0-7881-421C-81CF-F0AC1F99E5F0", "name": "Aegean Heights", "owner_occupied": 86, "property_count": 101 }, { "absent_occupied": 0, "guid": "tract_info::B063A42D-6C90-4060-95E6-0BAC11804767", "name": "Amarante", "owner_occupied": 0, "property_count": 0 }, { "absent_occupied": 0, "guid": "tract_info::9324a633-61c7-4d86-8ef8-247f789800fb", "name": "Antiqua", "owner_occupied": 0, "property_count": 0 }, { "absent_occupied": 0, "guid": "tract_info::3D3D9773-64DE-4E50-A751-5B530D47E8A3", "name": "Bel Mira at Quail Run", "owner_occupied": 0, "property_count": 0 }]
-  selectField: any;
-  //@ViewChild('select') selectField: any;
-
-  allfoods: Food[] = [
-    { value: 'steak-0', viewValue: 'Steak' },
-    { value: 'pizza-1', viewValue: 'Pizza' },
-    { value: 'tacos-2', viewValue: 'Tacos' },
-    { value: 'pasta-3', viewValue: 'Pasta' }
-  ];
-  myselectedFoods = ['pasta-3', 'steak-0'];
-  foodForm: FormControl = new FormControl(this.myselectedFoods);
-
   displayedColumns: string[] = ['_id', 'mispar_mosah', 'shem_mosah'];
 
   dataSource = new MatTableDataSource<GarageItem>();
 
   data: GarageItem[] = [];
 
-  allGarages: NameValuePair[] = [];
+  allAPIGarages: GarageItem[] = [];
+  allComboGarages: NameValuePair[] = [];
 
   garagesForm: FormControl = new FormControl();
 
+  value = 0;
+  loading = true;
+  isLoading = true;
+  isLoading2 = false;
+
   constructor(private fb: FormBuilder, private garageService: GarageService, private commonService: CommonService) {
     this.form = this.createForm();
+    //this.loadContent();
   }
 
   createForm(): FormGroup {
     return this.fb.group(
       {
-        foodForm: ['', Validators.required],
         garagesForm: ['', Validators.required],
-        //tractList: ['', Validators.required],
       })
   }
 
-
   ngOnInit(): void {
-    this.getAllAPIGarages();
-    this.getAllGarages();
+    this.getAllGaragesCommon();
   }
 
-  getAllAPIGarages() {
-    this.garageService.getAllAPIGarages().subscribe({
-      next: (response) => {
-        this.allGarages = this.commonService.getComboValues(response.data);
+  getAllGaragesCommon() {
+    let getAllAPIGarages$ = this.garageService.getAllAPIGarages();
+    let getAllGarages$ = this.garageService.getAllGarages();
+    const source = [getAllAPIGarages$, getAllGarages$];
+
+    forkJoin(source).subscribe({
+      next: ([garagesModel1, garagesModel2]) => {
+        this.isLoading = false;
+        const response1 = garagesModel1 as GarageResult;
+        const response2 = garagesModel2 as GarageItem[];
+        this.allAPIGarages = response1.data;
+        this.allComboGarages = this.commonService.getComboValues(this.allAPIGarages);
+        this.data = response2;
+        this.dataSource = new MatTableDataSource<GarageItem>(this.data);
       },
       error: (error) => {
-        this.commonService.displayMessage('There was an error in retrieving data from the server');
+        this.isLoading = false;
+        this.commonService.displayMessage('אירעה שגיאה באחזור נתונים מהשרת');
       }
     });
   }
-
 
   getAllGarages() {
     this.garageService.getAllGarages().subscribe({
@@ -79,49 +77,37 @@ export class MainComponent implements OnInit {
         this.dataSource = new MatTableDataSource<GarageItem>(this.data);
       },
       error: (error) => {
-        this.commonService.displayMessage('There was an error in retrieving data from the server');
+        this.commonService.displayMessage('אירעה שגיאה באחזור נתונים מהשרת');
       }
     });
   }
 
-  isIndeterminate(): boolean {
-    return (
-      this.selectField.value.length !== 0 &&
-      this.selectField.value.length < this.data.length
-    );
-  }
+  addGarages() {
+    this.isLoading2 = true;
+    setTimeout(() => { console.log('World!') }, 2000)
+    const arr: [] = this.garagesForm.value;
+    if (arr && arr.length > 0) {
+      arr.forEach((currentValue: string, index: number) => {
+        console.log(currentValue);
 
-  isChecked(): boolean {
-    return (
-      this.selectField.value &&
-      this.data.length &&
-      this.selectField.value.length === this.data.length
-    );
-  }
-
-  toggleAllSelection(change: MatCheckboxChange): void {
-    if (change.checked) {
-      this.selectField.options.forEach((item: MatOption) => item.select());
-    } else {
-      this.selectField.options.forEach((item: MatOption) => item.deselect());
+        const garageItem = this.allAPIGarages.find(x => x._id == currentValue);
+        if (garageItem) {
+          const findItem = this.data.find(x => x._id == currentValue);
+          if (!findItem) {
+            this.garageService.createGarage(garageItem).subscribe({
+              next: () => {
+              },
+              error: (error) => {
+                this.commonService.displayMessage('אירעה שגיאה באחזור נתונים מהשרת');
+              }
+            });
+          }
+        }
+      });
+      this.isLoading2 = false;
+      this.getAllGarages();
     }
+    else
+      this.commonService.displayMessage("בחר לפחות אחד מוסך")
   }
-
-  getValues(event: {
-    isUserInput: any;
-    source: { value: any; selected: any };
-  }) {
-    if (event.isUserInput) {
-      if (event.source.selected === true) {
-        console.log(event.source.value)
-      } else {
-        console.log(event.source.value)
-      }
-    }
-  }
-}
-
-export interface Food {
-  value: string;
-  viewValue: string;
 }

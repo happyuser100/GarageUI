@@ -29,7 +29,7 @@ export class GarageService {
 
   createGarage(model: GarageItem) {
     model.isFromAPI = false;
-    return this.httpClient.post(`${this.baseURL}/createGarage`, model)
+    return this.httpClient.post(`${this.baseURL}`, model)
       .pipe(
         catchError(this.commonService.handleError)
       );

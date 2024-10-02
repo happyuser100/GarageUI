@@ -1,61 +1,19 @@
 <form [formGroup]="form" class="mainFrom">
     <div class="row">
-        <!-- <mat-form-field class="col-md-6"> -->
-
-        <!-- <div class="select-all">
-                        <mat-checkbox
-                          [indeterminate]="isIndeterminate()"
-                          [checked]="isChecked()"
-                          (click)="$event.stopPropagation()"
-                          (change)="toggleAllSelection($event)"
-                          ></mat-checkbox
-                        >
-                      </div> -->
-
-        <!-- <mat-label>Test</mat-label> -->
-        <!-- <mat-select #select [multiple]="true" [formControl]="selectField">                  
-                  <mat-option *ngFor="let item of data" [value]="item['guid']">
-                    {{ item["name"] }}
-                  </mat-option>
-                </mat-select> -->
-
-        <!-- <mat-select placeholder="Mailing Sender" formControlName="massEmailSender">
-                <mat-option value="List">Test</mat-option>
-            </mat-select>
-        </mat-form-field>
-        <mat-form-field class="parent-class">-->
-
-
-
-        <!-- <app-mat-select class="custom-component" [data]="data" formControlName="tractList" fieldName="name"
-                [multiselect]="true" labelText="Test label" idField="guid"></app-mat-select>  -->
-        <!-- </mat-form-field> -->
-
-
-        <!-- (onSelectionChange)="getValues($event)" -->
-        <mat-form-field class="col-md-6">
-            <mat-select [formControl]="foodForm" placeholder="Favorite food" multiple>
-                <mat-option *ngFor="let food of allfoods" [value]="food.value">
-                    {{food.viewValue}}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-
-        <mat-form-field class="col-md-6">
+        <mat-form-field class="col-md-12">
             <mat-select [formControl]="garagesForm" placeholder="Garages" multiple>
-                <mat-option *ngFor="let garage of allGarages" [value]="garage.value">
+                <mat-option *ngFor="let garage of allComboGarages" [value]="garage.value">
                     {{garage.viewValue}}
                 </mat-option>
             </mat-select>
         </mat-form-field>
-
     </div>
 
 
     <div class="row">
         <div class="col-md-12">
 
-            <mat-table [dataSource]="dataSource">
+            <mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 
                 <ng-container matColumnDef="_id">
                     <mat-header-cell [hidden]="true" *matHeaderCellDef>
@@ -92,12 +50,35 @@
 
             </mat-table>
 
+            <div *ngIf="isLoading"
+                style="display: flex; justify-content: center; align-items: center; background: white;">
+                <mat-progress-spinner color="primary" mode="indeterminate">
+                </mat-progress-spinner>
+            </div>
 
         </div>
     </div>
 
+    <div class="row">
+        <div class="col-md-12">
+                <div>
+                    <br><br>
+                    <button mat-raised-button color="primary" type="button" (click)="addGarages()">
+                        הוספה
+                    </button>
+                </div>
+
+                <!-- style="display: flex; justify-content: center; align-items: center; background: white;" -->
+                <div *ngIf="isLoading2">
+                    <mat-progress-spinner color="primary" mode="indeterminate">
+                    </mat-progress-spinner>
+                </div>
+        </div>
+    </div>
 </form>
 
-Form Data : {{ foodForm.value | json }}<br />
+<!-- Form Data : {{ foodForm.value | json }}<br /> -->
 
 Garage Form Data : {{ garagesForm.value | json }}<br />
+
+mainFrom Data : {{ form.value | json }}<br />

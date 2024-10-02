@@ -22,6 +22,7 @@ import { NgModule } from "@angular/core";
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 const material = [
   MatButtonModule,
@@ -47,7 +48,8 @@ const material = [
   MatRippleModule,
   MatGridListModule,
   MatTooltipModule,
-  MatExpansionModule
+  MatExpansionModule,
+  MatProgressSpinnerModule
 ];
 
 @NgModule({
