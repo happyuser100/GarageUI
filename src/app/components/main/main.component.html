@@ -12,9 +12,7 @@
 
     <div class="row">
         <div class="col-md-12">
-
             <mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-
                 <ng-container matColumnDef="_id">
                     <mat-header-cell [hidden]="true" *matHeaderCellDef>
                         id
@@ -68,8 +66,7 @@
                     </button>
                 </div>
 
-                <!-- style="display: flex; justify-content: center; align-items: center; background: white;" -->
-                <div *ngIf="isLoading2">
+                <div *ngIf="isLoading2" style="display: flex; justify-content: center; align-items: center; background: white;">
                     <mat-progress-spinner color="primary" mode="indeterminate">
                     </mat-progress-spinner>
                 </div>
@@ -77,8 +74,4 @@
     </div>
 </form>
 
-<!-- Form Data : {{ foodForm.value | json }}<br /> -->
-
 Garage Form Data : {{ garagesForm.value | json }}<br />
-
-mainFrom Data : {{ form.value | json }}<br />

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
-import { forkJoin } from 'rxjs';
+import { Observable, delay, forkJoin } from 'rxjs';
 import { GarageItem, GarageResult } from 'src/app/models/garage-item';
 import { NameValuePair } from 'src/app/models/name-value-pair';
 import { Sample } from 'src/app/models/sample';
@@ -84,30 +84,41 @@ export class MainComponent implements OnInit {
 
   addGarages() {
     this.isLoading2 = true;
-    setTimeout(() => { console.log('World!') }, 2000)
     const arr: [] = this.garagesForm.value;
     if (arr && arr.length > 0) {
-      arr.forEach((currentValue: string, index: number) => {
-        console.log(currentValue);
+      let sources:Observable<Object>[]  = [];
 
+      //loop -  creating of observables array
+      for (let index = 0; index < arr.length; index++) {
+        const currentValue = arr[index];
         const garageItem = this.allAPIGarages.find(x => x._id == currentValue);
         if (garageItem) {
           const findItem = this.data.find(x => x._id == currentValue);
           if (!findItem) {
-            this.garageService.createGarage(garageItem).subscribe({
-              next: () => {
-              },
-              error: (error) => {
-                this.commonService.displayMessage('אירעה שגיאה באחזור נתונים מהשרת');
-              }
-            });
+            sources.push(this.garageService.createGarage(garageItem));
           }
+        }        
+      }
+
+      //Forkjoin of multiple observables and refresh garages table
+      forkJoin(sources).pipe(delay(10000)).subscribe({
+        next: (data) => {
+          this.isLoading2 = false;
+          this.getAllGarages();            
+        },
+        error: (error) => {
+          this.isLoading = false;
+          this.commonService.displayMessage('אירעה שגיאה באחזור נתונים מהשרת');
         }
-      });
-      this.isLoading2 = false;
-      this.getAllGarages();
+      }); 
     }
-    else
-      this.commonService.displayMessage("בחר לפחות אחד מוסך")
+    else{
+      this.isLoading2 = false;
+      this.commonService.displayMessage("בחר לפחות אחד מוסך");
+    }
   }
 }
+
+
+
+
